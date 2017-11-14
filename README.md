@@ -50,3 +50,8 @@ Restoring convolved clean components...
 >>> p.plot_fdf()
 ```
 
+This example contained within `mockdata.txt` contains two sources,
+- A 60% polarized source with I=2Jy and alpha=-0.7, and RM=135rad/m2; and
+- A 33% polarized source with I=700mJy and alpha=-0.7, and RM=-625rad/m2.
+Both are in the same IQU spectrum, observed from 1300-1600 MHz with 1 MHz channels. The noise in I is ~20 mJy, and in Q and U is ~10 mJy.
+
