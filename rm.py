@@ -148,7 +148,7 @@ class PolObservation:
 
 		# Calculate and report FWHM and other metrics
 		min_l2 = min(l2[gp])
-		min_dl2 = min(diff(l2[gp]))
+		min_dl2 = min(abs(diff(l2[gp])))
 		fwhm = 2.*sqrt(3.)/(max(l2[gp])-min(l2[gp]))
 		maxscale = pi/min_l2
 		rm_max = sqrt(3.)/min_dl2
