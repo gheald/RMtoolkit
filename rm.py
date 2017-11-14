@@ -1,4 +1,5 @@
-# RM module that implements 1-D RM Synthesis/RMCLEAN.
+"""RM module that implements 1-D RM Synthesis/RMCLEAN."""
+
 # Written by George Heald
 # v1.0, 13 November 2017
 
@@ -7,28 +8,31 @@ from pylab import *
 from scipy.optimize import curve_fit
 
 class PolObservation:
-	"""Class to describe an observation and perform polarimetry operations"""
+	"""Class to describe an observation & perform polarimetry operations"""
 
 	def __init__(self,freq,IQU,IQUerr=None,verbose=True):
 		"""
 		Initialise a PolObservation object.
 
-		The object needs to know the frequency setup and obtain Stokes IQU data.
+		The object needs to know the frequency setup and
+		obtain Stokes IQU data.
 		If you don't have I, but only QU, just provide ones.
-		Optionally, errors can be provided.
+		Optionally, errors can be provided for I, Q, and U.
 
 		Parameters
 		----------
 		freq : array
 		    Frequencies in Hz
 		IQU : array
-		    Stokes IQU values in a 3xN array where N is the length of freq.
+		    Stokes IQU values in a 3xN array where
+		    N is the length of freq.
 		IQUerr : array, optional (default None)
 		    Stokes IQU uncertainties in a 3xN array
 		verbose : boolean, optional (default True)
 		    Print some output?
 
-		When initialised, a powerlaw will be fit to Stokes I for possible later use.
+		When initialised, a powerlaw will be fit to Stokes I
+		for possible later use.
 		"""
 
 		self.freq = freq
@@ -56,8 +60,10 @@ class PolObservation:
 		"""
 		Perform RM Synthesis.
 
-		This function performs RM Synthesis on the provided IQU data and computes the RMSF.
-		It can adopt weights based on the IQU errors if they are provided.
+		This function performs RM Synthesis on the provided
+		IQU data and computes the RMSF.
+		It can adopt weights based on the IQU errors if they
+		are provided.
 
 		Parameters
 		----------
@@ -66,10 +72,12 @@ class PolObservation:
 		norm_mod : boolean, optional (default False)
 		   Normalise QU values with the Stokes I fitted power-law model?
 		norm_vals : boolean, optional (default False)
-		   Normalise QU values with the Stokes I data points per channel?
+		   Normalise QU values with the Stokes I data points
+		   per channel?
 		double : boolean, optional (default True)
 		   Create the RMSF double the length along the RM axis?
-		   This should be kept as True unless you are not planning to RMCLEAN.
+		   This should be kept as True unless you are not planning
+		   to RMCLEAN.
 		clip : float, optional (default -inf)
 		   Ignore channels with Stokes I S/N ratio < clip
 		pclip : float, optional (default -inf)
@@ -77,7 +85,8 @@ class PolObservation:
 		weightmode : str, optional (default 'none')
 		   How to do weighting in the Fourier transform. Options are:
 		     'none'	= no weighting (uniform weights)
-		     'varwt'	= inverse variance weights based on Stokes I noise
+		     'varwt'	= inverse variance weights based on
+				  Stokes I noise
 		   Further options may be added later.
 		verbose : boolean, optional (default True)
 		    Print some output?
@@ -233,7 +242,8 @@ class PolObservation:
 		"""
 		Obtain the peak of the FDF and its Faraday depth
 
-		This will fit the peak of the FSF and report results if requested.
+		This will fit the peak of the FSF and report results
+		if requested.
 		Values that are calculated and reported are:
 			Absolute value at peak, PA at peak, peak RM value
 		This is done for the dirty FDF.
@@ -298,7 +308,8 @@ class PolObservation:
 		     Clean cutoff, in units of S/N
 		     The default stops at 2*sigma above the mean
 		mask : boolean (default False)
-		     If True, all clean components must be within an RMSF FWHM of the first peak
+		     If True, all clean components must be within an
+		     RMSF FWHM of the first peak
 		verbose : boolean, optional (default True)
 		    Print some output?
 
@@ -348,7 +359,8 @@ class PolObservation:
 		Print some stats about the results
 		
 		Some basic statistics will be reported to the terminal:
-			mean of RM clean components, dispersion of RM clean components
+			mean of RM clean components,
+		        dispersion of RM clean components
 
 		"""
 
