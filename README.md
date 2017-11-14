@@ -27,7 +27,7 @@ Using uniform weights
 Normalisation value = 0.003333
 FWHM of RMSF is 192.128413 rad/m2
 Max RM scale is 89.368310 rad/m2
-Max RM value is -21193.286828 rad/m2
+Max RM value is 21193.286828 rad/m2
 Calculating RMSF...
 Calculating FDF...
 
