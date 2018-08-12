@@ -63,7 +63,7 @@ class PolObservation:
 		self.i = IQU[0]
 		self.q = IQU[1]
 		self.u = IQU[2]
-		if IQUerr == None:
+		if IQUerr is None:
 			self.ierr = None
 			self.qerr = None
 			self.uerr = None
@@ -125,9 +125,9 @@ class PolObservation:
 		l2 = (c/self.freq)**2
 
 		# Clip values if needed
-		if clip == None: clip = -inf
-		if pclip == None: pclip = -inf
-		if self.ierr == None:
+		if clip is None: clip = -inf
+		if pclip is None: pclip = -inf
+		if self.ierr is None:
 			gp = logical_and(self.i > clip, sqrt(self.q**2+self.u**2) > pclip)
 		else:
 			gp = logical_and(self.i/self.ierr > clip, sqrt((self.q/self.qerr)**2+(self.u/self.uerr)**2) > pclip)
@@ -135,14 +135,14 @@ class PolObservation:
 
 		# Work out weights if needed and overall normalisation
 		if weightmode == 'varwt':
-			if self.ierr == None:
+			if self.ierr is None:
 				print 'Error: you need to provide Stokes I errors to use inverse variance weighting'
 				return
 			if verbose: print 'Inverse variance weighting mode activated'
 			weights = 1./self.ierr**2
 		else:
 			print 'Using uniform weights'
-			weights = ones(phi.shape)
+			weights = ones(self.freq.shape)
 		K = 1./sum(weights[gp]) # Normalisation
 		if verbose: print 'Normalisation value = %f'%(K)
 
@@ -202,7 +202,7 @@ class PolObservation:
 		self.rmsynth_done = True
 		self.rmclean_done = False
 
-	def plot_fdf(self,display=True,save=None):
+	def plot_fdf(self,display=True,save=None,rescale=False):
 		"""
 		Plot the FDF and RMSF
 
@@ -216,12 +216,18 @@ class PolObservation:
 		       Show plot on screen?
 		save : str, optional (default None)
 		       Save figure to disk? Provide filename if desired.
+		rescale : boolean, optional (default False)
+		       Rescale RMSF peak to match that of FDF?
 
 		"""
 
 		if self.rmsynth_done:
 			figure()
-			plot(self.rmsf_phi,abs(self.rmsf),'k-')
+			if rescale:
+				scfac = max(abs(self.fdf))
+			else:
+				scfac = 1.
+			plot(self.rmsf_phi,scfac*abs(self.rmsf),'k-')
 			plot(self.phi,abs(self.fdf),'r-')
 			if self.rmclean_done:
 				plot(self.phi,abs(self.rm_cleaned),'b-')
@@ -251,7 +257,7 @@ class PolObservation:
 		"""
 
 		figure()
-		if self.ierr==None:
+		if self.ierr is None:
 			plot(self.freq,self.i,marker='o',ls='none')
 		else:
 			errorbar(self.freq,self.i,yerr=self.ierr,marker='o',ls='none')
