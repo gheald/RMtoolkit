@@ -202,7 +202,7 @@ class PolObservation:
 		self.rmsynth_done = True
 		self.rmclean_done = False
 
-	def plot_fdf(self,display=True,save=None,rescale=False):
+	def plot_fdf(self,display=True,save=None,rescale=False,plot_rmsf=True):
 		"""
 		Plot the FDF and RMSF
 
@@ -218,6 +218,8 @@ class PolObservation:
 		       Save figure to disk? Provide filename if desired.
 		rescale : boolean, optional (default False)
 		       Rescale RMSF peak to match that of FDF?
+		plot_rmsf : boolean, optional (default True)
+		       Plot RMSF?
 
 		"""
 
@@ -227,14 +229,23 @@ class PolObservation:
 				scfac = max(abs(self.fdf))
 			else:
 				scfac = 1.
-			plot(self.rmsf_phi,scfac*abs(self.rmsf),'k-')
-			plot(self.phi,abs(self.fdf),'r-')
-			if self.rmclean_done:
-				plot(self.phi,abs(self.rm_cleaned),'b-')
-				plot(self.phi,abs(self.rm_comps),'g-')
-				legend(('RMSF','FDF','Clean','Model'),loc='best')
+			if plot_rmsf:
+				plot(self.rmsf_phi,scfac*abs(self.rmsf),'k-')
+				plot(self.phi,abs(self.fdf),'r-')
+				if self.rmclean_done:
+					plot(self.phi,abs(self.rm_cleaned),'b-')
+					plot(self.phi,abs(self.rm_comps),'g-')
+					legend(('RMSF','FDF','Clean','Model'),loc='best')
+				else:
+					legend(('RMSF','FDF'),loc='best')
 			else:
-				legend(('RMSF','FDF'),loc='best')
+				plot(self.phi,abs(self.fdf),'r-')
+				if self.rmclean_done:
+					plot(self.phi,abs(self.rm_cleaned),'b-')
+					plot(self.phi,abs(self.rm_comps),'g-')
+					legend(('FDF','Clean','Model'),loc='best')
+				else:
+					legend(('FDF'),loc='best')
 			xlabel('RM (rad/m2)')
 			ylabel('Amplitude')
 			if save is not None: savefig(save,bbox_inches='tight')
