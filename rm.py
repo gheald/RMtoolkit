@@ -74,7 +74,7 @@ class PolObservation:
 			self.uerr = IQUerr[2]
 			p,pcov = curve_fit(lambda f,s,a: s*(f/mean(f))**a, freq, self.i, p0=(mean(self.i),-0.7), sigma=self.ierr)
 		self.i_model = p[0]*(freq/mean(freq))**p[1]
-		if verbose: print 'Fitted spectral index is %f'%p[1]
+		if verbose: print('Fitted spectral index is %f'%p[1])
 		self.model_s = p[0]
 		self.model_a = p[1]
 		self.rmsynth_done = False
@@ -131,20 +131,20 @@ class PolObservation:
 			gp = logical_and(self.i > clip, sqrt(self.q**2+self.u**2) > pclip)
 		else:
 			gp = logical_and(self.i/self.ierr > clip, sqrt((self.q/self.qerr)**2+(self.u/self.uerr)**2) > pclip)
-		if verbose: print 'Using %d of %d channels'%(sum(gp),len(l2))
+		if verbose: print('Using %d of %d channels'%(sum(gp),len(l2)))
 
 		# Work out weights if needed and overall normalisation
 		if weightmode == 'varwt':
 			if self.ierr is None:
-				print 'Error: you need to provide Stokes I errors to use inverse variance weighting'
+				print('Error: you need to provide Stokes I errors to use inverse variance weighting')
 				return
-			if verbose: print 'Inverse variance weighting mode activated'
+			if verbose: print('Inverse variance weighting mode activated')
 			weights = 1./self.ierr**2
 		else:
-			print 'Using uniform weights'
+			print('Using uniform weights')
 			weights = ones(self.freq.shape)
 		K = 1./sum(weights[gp]) # Normalisation
-		if verbose: print 'Normalisation value = %f'%(K)
+		if verbose: print('Normalisation value = %f'%(K))
 
 		# Calculate and report FWHM and other metrics
 		min_l2 = min(l2[gp])
@@ -153,18 +153,18 @@ class PolObservation:
 		maxscale = pi/min_l2
 		rm_max = sqrt(3.)/min_dl2
 		if verbose:
-			print 'FWHM of RMSF is %f rad/m2'%fwhm
-			print 'Max RM scale is %f rad/m2'%maxscale
-			print 'Max RM value is %f rad/m2'%rm_max
+			print('FWHM of RMSF is %f rad/m2'%fwhm)
+			print('Max RM scale is %f rad/m2'%maxscale)
+			print('Max RM value is %f rad/m2'%rm_max)
 		l20 = mean(l2[gp])
 
 		# QU values to operate on, normalized if needed
 		quvec = self.q + ci*self.u
 		if norm_mod:
-			if verbose: print 'Normalising QU by Stokes I model'
+			if verbose: print('Normalising QU by Stokes I model')
 			quvec /= self.i_model
 		if norm_vals:
-			if verbose: print 'Normalising QU by Stokes I values'
+			if verbose: print('Normalising QU by Stokes I values')
 			quvec /= self.i
 
 		# Work out dimensions of RMSF
@@ -178,10 +178,10 @@ class PolObservation:
 		fdf = zeros(phi.shape,dtype=complex)
 
 		# Now do the work
-		if verbose: print 'Calculating RMSF...'
+		if verbose: print('Calculating RMSF...')
 		for j,phival in enumerate(rmsf_phi):
 			rmsf[j]=K*sum(weights[gp]*exp(-2.*ci*phival*(l2[gp]-l20)))
-		if verbose: print 'Calculating FDF...'
+		if verbose: print('Calculating FDF...')
 		for j,phival in enumerate(phi):
 			fdf[j]=K*sum(quvec[gp]*weights[gp]*exp(-2.*ci*phival*(l2[gp]-l20)))
 
@@ -298,7 +298,7 @@ class PolObservation:
 
 		"""
 		if self.rmsynth_done:
-			x0 = where(abs(self.fdf)==max(abs(self.fdf)))[0]
+			x0 = where(abs(self.fdf)==max(abs(self.fdf)))[0][0]
 			if x0 == 0 or x0 == len(self.phi)-1:
 				self.fdf_peak_rm = self.phi[x0]
 				self.fdf_peak = max(abs(self.fdf))
@@ -313,10 +313,10 @@ class PolObservation:
 				rotpeak = self.fdf[x0]*exp(-2.*complex(0.,1.)*self.fdf_peak_rm*self.l20)
 				pa = 0.5*arctan2(imag(rotpeak),real(rotpeak))
 				self.pa = (pa*180./pi)%360.
-			if verbose: print 'FDF peaks at an amplitude %f, at RM=%f +/- %f rad/m2'%(self.fdf_peak,self.fdf_peak_rm,self.fdf_peak_rm_err)
-			if verbose: print 'RM-corrected PA of FDF peak is %f degrees'%(self.pa)
+			if verbose: print('FDF peaks at an amplitude %f, at RM=%f +/- %f rad/m2'%(self.fdf_peak,self.fdf_peak_rm,self.fdf_peak_rm_err))
+			if verbose: print('RM-corrected PA of FDF peak is %f degrees'%(self.pa))
 		if self.rmclean_done:
-			x0 = where(abs(self.rm_cleaned)==max(abs(self.rm_cleaned)))[0]
+			x0 = where(abs(self.rm_cleaned)==max(abs(self.rm_cleaned)))[0][0]
 			if x0 == 0 or x0 == len(self.phi)-1:
 				self.cln_fdf_peak_rm = self.phi[x0]
 				self.cln_fdf_peak = max(abs(self.fdf))
@@ -330,8 +330,8 @@ class PolObservation:
 				cln_rotpeak = self.rm_cleaned[x0]*exp(-2.*complex(0.,1.)*self.fdf_peak_rm*self.l20)
 				cln_pa = 0.5*arctan2(imag(cln_rotpeak),real(cln_rotpeak))
 				self.cln_pa = (cln_pa*180./pi)%360.
-			if verbose: print 'Cleaned FDF peaks at an amplitude %f, at RM=%f +/- %f rad/m2'%(self.cln_fdf_peak,self.cln_fdf_peak_rm,self.cln_fdf_peak_rm_err)
-			if verbose: print 'RM-corrected PA of cleaned FDF peak is %f degrees'%(self.cln_pa)
+			if verbose: print('Cleaned FDF peaks at an amplitude %f, at RM=%f +/- %f rad/m2'%(self.cln_fdf_peak,self.cln_fdf_peak_rm,self.cln_fdf_peak_rm_err))
+			if verbose: print('RM-corrected PA of cleaned FDF peak is %f degrees'%(self.cln_pa))
 			
 	def rmclean(self,niter=1000,gain=0.1,cutoff=2.,mask=False,verbose=True):
 		"""
@@ -359,7 +359,7 @@ class PolObservation:
 		noise = std(real(self.fdf))
 		zerolev = median(abs(self.fdf))
 		cleanlim = cutoff*noise+zerolev
-		if verbose: print 'CLEAN will proceed down to %f'%(cleanlim)
+		if verbose: print('CLEAN will proceed down to %f'%(cleanlim))
 		num = 0
 		res = self.fdf.copy()
 		modcomp = zeros(res.shape,dtype=complex)
@@ -368,27 +368,27 @@ class PolObservation:
 		while max(resp[mr]) > cleanlim and num < niter:
 			maxloc = where(resp[mr]==max(resp[mr]))[0]+mr[0]
 			if num==0 and verbose:
-				print 'First component found at %f rad/m2'%(self.phi[maxloc])
+				print('First component found at %f rad/m2'%(self.phi[maxloc]))
 			if num==0 and mask:
 				mr=range(maxloc-self.rmsf_fwhm_pix/2,maxloc+self.rmsf_fwhm_pix/2+1)
 				if verbose:
-					print 'Masking: Clean components must fall within mask of %d/%d pixels'%(len(mr),len(resp))
-					print '(i.e. within RM range %f - %f rad/m2)'%(self.phi[mr[0]],self.phi[mr[-1]])
+					print('Masking: Clean components must fall within mask of %d/%d pixels'%(len(mr),len(resp)))
+					print('(i.e. within RM range %f - %f rad/m2)'%(self.phi[mr[0]],self.phi[mr[-1]]))
 			num += 1
 			if num % 10**int(log10(num)) == 0 and verbose:
-				print 'Iteration %d: max residual = %f'%(num,max(resp))
+				print('Iteration %d: max residual = %f'%(num,max(resp)))
 			srmsf = roll(self.rmsf,maxloc-self.nphi)
 			modcomp[maxloc] += res[maxloc]*gain
 			subtr = res[maxloc]*gain*srmsf[:self.nphi]
 			res -= subtr
 			resp = abs(res)
-		if verbose: print 'Convolving clean components...'
+		if verbose: print('Convolving clean components...')
 		if 10*self.rmsf_fwhm_pix > len(self.phi):
 			kernel = exp(-(self.phi-mean(self.phi))**2/(2.*(self.rmsf_fwhm/2.355)**2))
 		else:
 			kernel = exp(-arange(-self.rmsf_fwhm*5.,self.rmsf_fwhm*5.,self.dphi)**2/(2.*(self.rmsf_fwhm/2.355)**2))
 		self.rm_model = convolve(modcomp,kernel,mode='same')
-		if verbose: print 'Restoring convolved clean components...'
+		if verbose: print('Restoring convolved clean components...')
 		self.rm_cleaned = self.rm_model + res
 		self.rm_comps = modcomp
 		self.niters = num
@@ -413,6 +413,6 @@ class PolObservation:
 			crm = self.phi.copy()
 			mcrm = sum(cabs*crm)/sum(cabs)
 			crmdisp = sqrt(sum(cabs*(crm-mcrm)**2)/sum(cabs))
-			print 'Weighted mean RM of clean components is %f'%mcrm
-			print 'Weighted RM dispersion of clean components is %f'%crmdisp
+			print('Weighted mean RM of clean components is %f'%mcrm)
+			print('Weighted RM dispersion of clean components is %f'%crmdisp)
 
